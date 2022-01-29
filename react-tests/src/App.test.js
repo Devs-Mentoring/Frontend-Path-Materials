@@ -1,7 +1,7 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import App from './App';
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import App from "./App";
 
-test('renders header in app component', () => {
+test("renders header in app component", () => {
   render(<App />);
   const header = screen.getByText(/TODOs/i);
   expect(header).toBeInTheDocument();
@@ -18,27 +18,11 @@ test("renders form with submit button in app component", () => {
   expect(screen.getByText(/send/i)).toBeInTheDocument();
 });
 
-test("allow user to add item to list", ()=>{
-  render(<App/>);
-  const input=screen.getByLabelText("new-todo")
-  fireEvent.change(input,{target: {value: 'make tests'}})
-  fireEvent.click(screen.getByText("send"))
-  screen.getByText("make tests")
-})
-
-//test async code
-const mockApi=jest.fn();
-
-test("allow user to add item to API",async ()=>{
+test("allow user to add item to list", async () => {
   render(<App />);
-  mockApi.mockResolvedValueOnce({id:123,text:"todo text"})
-  
   const input = screen.getByLabelText("new-todo");
-  fireEvent.change(input, { target: { value: "make tests" } });
-  fireEvent.click(screen.getByText("send"));
-
-  // expect(mockApi).toHaveBeenCalled();
-  // expect(mockApi).toHaveBeenCalledWith("make tests");
-  
-  await screen.getByText("make tests");
-})
+  //await and waitFor to wait for rerender
+  await waitFor(()=>fireEvent.change(input, { target: { value: "make tests" } }));
+  await waitFor(()=>fireEvent.click(screen.getByText("send")));
+  expect(screen.queryByText(/make tests/i)).toBeInTheDocument()
+});

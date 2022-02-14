@@ -1,3 +1,3 @@
 # Devs mentoring
 
-Example repo
+Example repo of tests
